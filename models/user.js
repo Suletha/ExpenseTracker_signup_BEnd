@@ -22,7 +22,7 @@ const User = sequelize.define('User', {
 
 User.beforeCreate(async (user) => {
     if (user.password) {
-        const saltRounds = 10;
+        const saltRounds = 12;
         try {
             const hashedPassword = await bcrypt.hash(user.password, saltRounds);
             user.password = hashedPassword;

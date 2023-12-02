@@ -2,16 +2,16 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 
 exports.signup = async (req, res, next) => {
-    const { name, email, password, confirmPassword } = req.body;
+  const { name, email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
-        return res.status(400).json({ success: false, message: 'Passwords do not match' });
+      return res.status(400).json({ success: false, message: 'Passwords do not match' });
     }
 
     try {
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
-            return res.status(400).json({ success: false, message: 'Email already exists' });
+          return res.status(400).json({ success: false, message: 'Email already exists' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);

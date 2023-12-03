@@ -10,7 +10,7 @@ const sequelize=require('./util/database');
 //Controllers
 const userRoutes = require('./routes/item-routes');
 const expenseRoutes = require('./routes/expense-routes');
-
+const authenticationMW = require("./util/authentication");
 //Models
 const User = require("./models/user");
 const Expense = require("./models/expense");
@@ -25,6 +25,11 @@ app.use(cors());
 
 app.use('/item-routes', userRoutes);
 app.use('/expense-routes', expenseRoutes);
+
+User.hasMany(Expense);
+Expense.belongsTo(User);
+
+
 
 sequelize.sync()
 .then((result)=>{

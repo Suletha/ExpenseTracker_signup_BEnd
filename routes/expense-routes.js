@@ -9,28 +9,28 @@ const router = express.Router();
 // /expenses => GET
 router.get(
     "/expenses",
-    authenticationMiddleware,
+    authenticationMW,
     expenseController.getExpenses
   );
   
   // /expenses => POST
   router.post(
     "/expenses",
-    authenticationMiddleware,
+    authenticationMW,
     expenseController.postExpenses
   );
   
   // /expense/:id => GET
   router.get(
     "/expense/:id",
-    authenticationMiddleware,
+    authenticationMW,
     expenseController.getExpense
   );
   
   // /expense/:id => DELETE
   router.delete(
     "/expense/:id",
-    authenticationMiddleware,
+    authenticationMW,
     expenseController.deleteExpense
   );
 

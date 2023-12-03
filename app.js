@@ -10,7 +10,7 @@ const sequelize=require('./util/database');
 //Controllers
 const userRoutes = require('./routes/item-routes');
 const expenseRoutes = require('./routes/expense-routes');
-const authenticationMW = require("./util/authentication");
+const authenticationMW = require("./util/auth");
 //Models
 const User = require("./models/user");
 const Expense = require("./models/expense");

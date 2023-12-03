@@ -2,7 +2,7 @@ const { Sequelize } = require('sequelize');
 const bcrypt = require('bcrypt');
 const sequelize = require('../util/database');
 
-const User = sequelize.define('User', {
+const User = sequelize.define('ET_usersignup', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -20,22 +20,4 @@ const User = sequelize.define('User', {
     }
 });
 
-User.beforeCreate(async (user) => {
-    if (user.password) {
-        const saltRounds = 12;
-        try {
-            const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-            user.password = hashedPassword;
-        } catch (err) {
-            throw new Error('Password hashing failed');
-        }
-    }
-});
-
-User.beforeValidate((user) => {
-    if (user.password !== user.confirmPassword) {
-        throw new Error("Passwords don't match");
-    }
-});
-
-module.exports = User;
+module.exports = User

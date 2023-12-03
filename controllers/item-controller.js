@@ -2,9 +2,9 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 
 exports.signup = async (req, res, next) => {
-  const { name, email, password, confirmPassword } = req.body;
+  const { name, email, password, confirm_password } = req.body;
 
-    if (password !== confirmPassword) {
+    if (password !== confirm_password) {
       return res.status(400).json({ success: false, message: 'Passwords do not match' });
     }
 

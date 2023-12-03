@@ -5,10 +5,10 @@ const authController = require('../controllers/item-controller');
 const router = express.Router();
 
 // /users => signup
-router.post('/login', authController.signup);
+router.post('/user/signup', authController.signup);
 
 // /users => login
-router.get('/signup',authController.login);
+router.post('/user/login',authController.login);
 
 
 

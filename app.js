@@ -1,41 +1,58 @@
 const path = require("path");
 const fs = require("fs");
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors=require('cors');
 
-const sequelize=require('./util/database');
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const morgan = require("morgan");
+require("dotenv").config();
 
+const sequelize = require("./util/database");
+const userRoutes = require("./routes/user-routes");
+const expenseRoutes = require("./routes/expense-routes");
+const purchaseRoutes = require("./routes/purchase-routes");
+const authenticationMiddleware = require("./util/authentication");
 
-//Controllers
-const userRoutes = require('./routes/item-routes');
-const expenseRoutes = require('./routes/expense-routes');
-const authenticationMW = require("./util/auth");
-//Models
 const User = require("./models/user");
 const Expense = require("./models/expense");
+const Order = require("./models/order");
+
 
 const app = express();
 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
 
-
-
-app.use(bodyParser.json({ extended: false }));
+app.use(morgan("combined", { stream: accessLogStream }));
 app.use(cors());
+app.use(bodyParser.json({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use('/item-routes', userRoutes);
-app.use('/expense-routes', expenseRoutes);
+//app.use(express.static(path.join(__dirname, "public")));
+
+
+app.use("/users", userRoutes);
+app.use("/purchase", authenticationMiddleware, purchaseRoutes);
+app.use(expenseRoutes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
 
+User.hasMany(Order);
+Order.belongsTo(User);
 
 
-sequelize.sync()
-.then((result)=>{
-    //console.log(result);
-    app.listen(3000);
-})
-.catch((err)=>{
-    console.log(err);
-});
+
+
+// Sync the database models
+sequelize
+  .sync()
+  .then(() => {
+    // Start the server
+    app.listen(process.env.PORT || 4000);
+  })
+  .catch((error) => {
+    console.error(error);
+  });

@@ -31,3 +31,13 @@ exports.purchasePremium = async (req, res, next) => {
     res.status(403).json({ message: "Something went wrong", error: err });
   }
 };
+
+exports.getLeaderBoard = async (req, res, next) => {
+  try {
+    const expenses = await User.findAll();
+    res.status(200).json(expenses);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

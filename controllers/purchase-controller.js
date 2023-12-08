@@ -8,8 +8,12 @@ const { CostExplorer } = require("aws-sdk");
 exports.purchasePremium = async (req, res, next) => {
   try {
     var rzp = new Razorpay({
-      key_id: process.env.RZP_KEY_ID,
-      key_secret: process.env.RZP_KEY_SECRET,
+      key_id: rzp_test_JFpUUEdKARqdiq,
+      key_secret: D9ah0dDLKYr8HuDMXDA1NMHp,
+      // key_id: process.env.RZP_KEY_ID,
+      // key_secret: process.env.RZP_KEY_SECRET,
+
+
     });
     const amount = 2500;
 

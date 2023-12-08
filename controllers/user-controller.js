@@ -3,8 +3,11 @@ const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_KEY;
 
 const User = require("../models/user");
+const DownloadedFile = require("../models/filesdownloaded");
 const ForgetPasswordRequest = require("../models/forgetpasswordrequest");
 const sequelize = require("../util/database");
+const S3services = require("../services/s3services");
+const MailServices = require("../services/nodemailerservices");
 
 
 exports.postUsers = async (req, res, next) => {
@@ -78,5 +81,54 @@ exports.forgetpassword = async (req, res, next) => {
     res.status(400).json({ message: "Unable to send mail" });
   } else {
     res.status(200).json({ message: "mail send successfully" });
+  }
+};
+exports.download = async (req, res, next) => {
+  const ispremium = req.user.ispremium;
+  if (ispremium === true) {
+    const expenses = await req.user.getExpenses();
+    const stringifiedExpenses = JSON.stringify(expenses);
+    const filename = `Expense${req.user.id}/${new Date()}.txt`;
+    try {
+      const fileUrl = await S3services.uploadToS3(
+        stringifiedExpenses,
+        filename
+      );
+      const filedetails = await DownloadedFile.create({
+        location: fileUrl,
+        userId: req.user.id,
+      });
+      console.log(fileUrl);
+      res.status(200).json({ fileUrl, success: true });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ fileUrl: "", success: "false", error: "File not created" });
+    }
+  } else {
+    res
+      .status(500)
+      .json({ fileUrl: "", success: "false", error: "Unauthorized" });
+  }
+};
+
+exports.getFiles = async (req, res, next) => {
+  try {
+    const page = req.query.page || 1;
+    const limit = 5; // Number of files per page
+    const offset = (page - 1) * limit;
+
+    const files = await DownloadedFile.findAndCountAll({
+      where: { userId: req.user.id },
+      limit: limit,
+      offset: offset,
+    });
+
+    console.log(files.rows); // Contains the files for the current page
+    const totalFiles = files.count;
+
+    res.status(200).json({ files: files.rows, totalFiles });
+  } catch (err) {
+    res.status(500).json({ error: "An error occurred" });
   }
 };
